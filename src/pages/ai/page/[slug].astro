@@ -1,0 +1,93 @@
+---
+import BlogCard from "@/components/BlogCard.astro";
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import Pagination from "@/components/Pagination.astro";
+import config from "@/config/config.json";
+import Base from "@/layouts/Base.astro";
+import { getSinglePage } from "@/lib/contentParser.astro";
+import { getAllTaxonomy, getTaxonomy } from "@/lib/taxonomyParser.astro";
+import { sortByDate } from "@/lib/utils/sortFunctions";
+import PageHeader from "@/partials/PageHeader.astro";
+import PostSidebar from "@/partials/PostSidebar.astro";
+
+const { slug } = Astro.params;
+const currentPage = slug && !isNaN(Number(slug)) ? Number(slug) : 1;
+
+const posts = await getSinglePage("ai");
+const postsWithSection = posts.map((post) => ({ ...post, section: "ai" }));
+const sortedPosts = sortByDate(postsWithSection);
+
+const totalPages = Math.ceil(posts.length / config.settings.pagination);
+const indexOfLastPost = currentPage * config.settings.pagination;
+const indexOfFirstPost = indexOfLastPost - config.settings.pagination;
+const currentPosts = sortedPosts.slice(indexOfFirstPost, indexOfLastPost);
+
+const categories = await getTaxonomy("ai", "categories");
+const allCategories = await getAllTaxonomy("ai", "categories");
+const tags = await getTaxonomy("ai", "tags");
+const allTags = await getAllTaxonomy("ai", "tags");
+
+export async function getStaticPaths() {
+  const posts = await getSinglePage("ai");
+  const totalPages = Math.ceil(posts.length / config.settings.pagination);
+  const paths = [];
+
+  for (let i = 1; i < totalPages; i++) {
+    paths.push({
+      params: {
+        slug: (i + 1).toString(),
+      },
+    });
+  }
+
+  return paths;
+}
+
+const breadcrumbItems = [
+  { name: "AI", url: "/ai" },
+  { name: `第 ${currentPage} 页`, url: `/ai/page/${currentPage}` },
+];
+
+const pageTitle = "AI";
+const metaTitle = `AI - 第 ${currentPage} 页 - Lewin's Insight`;
+const pageDesc = "关注模型与产品进展，分享值得追踪的 AI 趋势与工具。";
+---
+
+<Base title={pageTitle} meta_title={metaTitle} description={pageDesc} noindex={true}>
+  <PageHeader title={pageTitle} />
+  <Breadcrumbs items={breadcrumbItems} />
+  <section class="section">
+    <div class="container">
+      <div class="row gx-5">
+        <div class="lg:col-8">
+          <div class="row">
+            {
+              currentPosts.length > 0 ? (
+                currentPosts.map((post) => (
+                  <div class="mb-14 md:col-6">
+                    <BlogCard data={post} section={post.section} />
+                  </div>
+                ))
+              ) : (
+                <div class="col-12 text-center py-20">
+                  <h3 class="text-h3 text-text-light dark:text-darkmode-text-light">
+                    暂无文章，稍后再来看看。
+                  </h3>
+                </div>
+              )
+            }
+          </div>
+          <Pagination section="ai" currentPage={currentPage} totalPages={totalPages} />
+        </div>
+
+        <PostSidebar
+          categories={categories}
+          tags={tags}
+          allCategories={allCategories}
+          allTags={allTags}
+          taxonomyBase="ai"
+        />
+      </div>
+    </div>
+  </section>
+</Base>

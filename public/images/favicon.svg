@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Lewin's Insight">
+  <defs>
+    <linearGradient id="liFavicon" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3B82F6" />
+      <stop offset="1" stop-color="#F97316" />
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#liFavicon)" />
+  <path d="M40 36h16v56h32v12H40V36z" fill="#0B1220" opacity="0.92" />
+</svg>
+

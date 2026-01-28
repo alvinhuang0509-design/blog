@@ -1,0 +1,6 @@
+Contact: https://lewinsinsight.com/contact/
+Preferred-Languages: zh, en
+Canonical: https://lewinsinsight.com/.well-known/security.txt
+Policy: https://lewinsinsight.com/about/
+Expires: 2027-01-01T00:00:00.000Z
+

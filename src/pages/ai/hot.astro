@@ -1,0 +1,60 @@
+---
+import BlogCard from "@/components/BlogCard.astro";
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import Base from "@/layouts/Base.astro";
+import { getSinglePage } from "@/lib/contentParser.astro";
+import PageHeader from "@/partials/PageHeader.astro";
+import PostSidebar from "@/partials/PostSidebar.astro";
+import getHotPosts from "@/lib/utils/hotPosts";
+import { getAllTaxonomy, getTaxonomy } from "@/lib/taxonomyParser.astro";
+
+const posts = await getSinglePage("ai");
+const postsWithSection = posts.map((post) => ({ ...post, section: "ai" }));
+
+const allCategories = await getAllTaxonomy("ai", "categories");
+const categories = await getTaxonomy("ai", "categories");
+const tags = await getTaxonomy("ai", "tags");
+const allTags = await getAllTaxonomy("ai", "tags");
+
+const hotPosts = getHotPosts(postsWithSection, 10);
+
+const breadcrumbItems = [
+  { name: "AI", url: "/ai" },
+  { name: "热门文章", url: "/ai/hot" },
+];
+---
+
+<Base title="热门文章 - AI" description="基于阅读量和评论数的热门 AI 文章推荐">
+  <PageHeader title="热门文章" />
+  <Breadcrumbs items={breadcrumbItems} />
+  <section class="section">
+    <div class="container">
+      <div class="row gx-5">
+        <div class="lg:col-8">
+          <div class="row">
+            {
+              hotPosts.map((post, index) => (
+                <div class="mb-14 md:col-6">
+                  <div class="relative">
+                    <div class="absolute top-0 left-0 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white font-bold text-lg">
+                      {index + 1}
+                    </div>
+                    <BlogCard data={post} section={post.section} />
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+
+        <PostSidebar
+          categories={categories}
+          tags={tags}
+          allCategories={allCategories}
+          allTags={allTags}
+          taxonomyBase="ai"
+        />
+      </div>
+    </div>
+  </section>
+</Base>

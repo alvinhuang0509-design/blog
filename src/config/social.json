@@ -1,24 +1,19 @@
 {
   "main": [
     {
-      "name": "facebook",
-      "icon": "FaFacebook",
-      "link": "https://www.facebook.com/"
-    },
-    {
-      "name": "x",
-      "icon": "FaXTwitter",
-      "link": "https://x.com/"
-    },
-    {
       "name": "github",
       "icon": "FaGithub",
-      "link": "https://www.github.com/"
+      "link": "https://github.com/alvin.h"
     },
     {
-      "name": "linkedin",
-      "icon": "FaLinkedin",
-      "link": "https://www.linkedin.com/"
+      "name": "xiaohongshu",
+      "icon": "CuXiaohongshu",
+      "link": "https://www.xiaohongshu.com/user/profile/593c0ef882ec394f9f945398"
+    },
+    {
+      "name": "douyin",
+      "icon": "CuDouyin",
+      "link": "https://v.douyin.com/gnvSFceRxNE/"
     }
   ]
 }

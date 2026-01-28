@@ -1,45 +1,86 @@
 ---
-import { humanize } from "@/lib/utils/textConverter";
+import config from "@/config/config.json";
 
-const { className }: { className?: string } = Astro.props;
+export interface BreadcrumbItem {
+  name: string;
+  url: string;
+}
 
-const paths = Astro.url.pathname.split("/").filter((x) => x);
-let parts = [
-  {
-    label: "Home",
-    href: "/",
-    "aria-label": Astro.url.pathname === "/" ? "page" : undefined,
-  },
-];
+export interface Props {
+  items: BreadcrumbItem[];
+  className?: string;
+}
 
-paths.forEach((label: string, i: number) => {
-  const href = `/${paths.slice(0, i + 1).join("/")}`;
-  label !== "page" &&
-    parts.push({
-      label: humanize(label.replace(".html", "").replace(/[-_]/g, " ")) || "",
-      href,
-      "aria-label": Astro.url.pathname === href ? "page" : undefined,
-    });
-});
+const { items, className } = Astro.props as Props;
+
+const baseUrl =
+  Astro.site ??
+  (config.site.base_url ? new URL(config.site.base_url) : undefined);
+
+const breadcrumbJsonLd =
+  baseUrl && items?.length
+    ? {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: items.map((item, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: item.name,
+          item: new URL(item.url, baseUrl).toString(),
+        })),
+      }
+    : null;
 ---
 
-<nav aria-label="Breadcrumb" class={className}>
-  <ol class="inline-flex" role="list">
-    {
-      parts.map(({ label, ...attrs }, index) => (
-        <li class="mx-1 capitalize" role="listitem">
-          {index > 0 && <span class="inlin-block mr-1">/</span>}
-          {index !== parts.length - 1 ? (
-            <a class="text-primary dark:text-darkmode-primary" {...attrs}>
-              {label}
-            </a>
-          ) : (
-            <span class="text-text-light dark:text-darkmode-text-light">
-              {label}
-            </span>
-          )}
-        </li>
-      ))
-    }
-  </ol>
+{
+  breadcrumbJsonLd && (
+    <script is:inline type="application/ld+json">
+      {JSON.stringify(breadcrumbJsonLd)}
+    </script>
+  )
+}
+
+<nav aria-label="Breadcrumb" class={`breadcrumbs ${className || ""}`}>
+  <div class="container">
+    <ol class="flex flex-wrap items-center gap-x-2 gap-y-1 py-4 text-sm">
+      {
+        items.map((item, index) => (
+          <li class="flex items-center">
+            {
+              index > 0 && (
+                <svg
+                  class="h-4 w-4 text-text-light dark:text-darkmode-text-light"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 5.707a1 1 0 011.414 0l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              )
+            }
+            {
+              index === items.length - 1 ? (
+                <span
+                  class="text-text-light dark:text-darkmode-text-light"
+                  aria-current="page"
+                >
+                  {item.name}
+                </span>
+              ) : (
+                <a
+                  href={item.url}
+                  class="text-primary transition-colors hover:text-primary dark:text-darkmode-primary dark:hover:text-darkmode-primary"
+                >
+                  {item.name}
+                </a>
+              )
+            }
+          </li>
+        ))
+      }
+    </ol>
+  </div>
 </nav>

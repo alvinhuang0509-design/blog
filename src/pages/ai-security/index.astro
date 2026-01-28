@@ -1,0 +1,99 @@
+---
+import BlogCard from "@/components/BlogCard.astro";
+import Pagination from "@/components/Pagination.astro";
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import config from "@/config/config.json";
+import Base from "@/layouts/Base.astro";
+import { getSinglePage } from "@/lib/contentParser.astro";
+import { getAllTaxonomy, getTaxonomy } from "@/lib/taxonomyParser.astro";
+import { sortByDate } from "@/lib/utils/sortFunctions";
+import PageHeader from "@/partials/PageHeader.astro";
+import PostSidebar from "@/partials/PostSidebar.astro";
+
+// Fetch AI and Security collections
+const aiPosts = await getSinglePage("ai");
+const securityPosts = await getSinglePage("security");
+
+// Add 'section' property to each post to generate correct URLs
+const aiPostsWithSection = aiPosts.map(post => ({ ...post, section: "ai" }));
+const securityPostsWithSection = securityPosts.map(post => ({ ...post, section: "security" }));
+
+// Merge and sort
+const allPosts = [...aiPostsWithSection, ...securityPostsWithSection];
+const sortedPosts = sortByDate(allPosts);
+
+// Pagination logic
+const totalPages: number = Math.ceil(allPosts.length / config.settings.pagination);
+const currentPosts = sortedPosts.slice(0, config.settings.pagination);
+
+// Taxonomy aggregation (Optional: simplistic merging for now)
+const aiCategories = await getTaxonomy("ai", "categories");
+const secCategories = await getTaxonomy("security", "categories");
+const categories = [...new Set([...aiCategories, ...secCategories])]; // Unique categories
+const allCategories = [
+  ...(await getAllTaxonomy("ai", "categories")),
+  ...(await getAllTaxonomy("security", "categories")),
+];
+
+const aiTags = await getTaxonomy("ai", "tags");
+const secTags = await getTaxonomy("security", "tags");
+const tags = [...new Set([...aiTags, ...secTags])];
+const allTags = [
+  ...(await getAllTaxonomy("ai", "tags")),
+  ...(await getAllTaxonomy("security", "tags")),
+];
+
+const breadcrumbItems = [
+  { name: "资讯汇总", url: "/ai-security" }
+];
+
+const pageTitle = "资讯汇总";
+const pageDesc = "汇总 AI 资讯与信息安全资讯，分享技术洞察与实战经验。";
+---
+
+<Base
+  title={pageTitle}
+  meta_title={pageTitle}
+  description={pageDesc}
+>
+  <PageHeader title={pageTitle} />
+  <Breadcrumbs items={breadcrumbItems} />
+  <section class="section">
+    <div class="container">
+      <div class="row gx-5">
+        <!-- blog posts -->
+        <div class="lg:col-8">
+          <div class="row">
+            {
+              currentPosts.length > 0 ? (
+                currentPosts.map((post) => (
+                  <div class="mb-14 md:col-6">
+                    <BlogCard data={post} section={post.section} />
+                  </div>
+                ))
+              ) : (
+                 <div class="col-12 text-center py-20">
+                    <h3 class="text-h3 text-text-light dark:text-darkmode-text-light">暂无文章，稍后再来看看。</h3>
+                 </div>
+              )
+            }
+          </div>
+          <Pagination
+            section="ai-security"
+            currentPage={1}
+            totalPages={totalPages}
+          />
+        </div>
+
+        <!-- sidebar -->
+        <PostSidebar
+          categories={categories}
+          tags={tags}
+          allCategories={allCategories}
+          allTags={allTags}
+          taxonomyBase="ai-security"
+        />
+      </div>
+    </div>
+  </section>
+</Base>

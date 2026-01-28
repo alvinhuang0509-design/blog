@@ -5,40 +5,71 @@ import { getSinglePage } from "@/lib/contentParser.astro";
 import { getTaxonomy } from "@/lib/taxonomyParser.astro";
 import { sortByDate } from "@/lib/utils/sortFunctions";
 import taxonomyFilter from "@/lib/utils/taxonomyFilter";
+import { humanize } from "@/lib/utils/textConverter";
 import PageHeader from "@/partials/PageHeader.astro";
 
-// get static paths for all categories
+// get static paths for all categories across all collections
 export async function getStaticPaths() {
-  const BLOG_FOLDER = "blog";
-  const categories = await getTaxonomy(BLOG_FOLDER, "categories");
+  const collections = ["blog", "ai", "security", "dailyLife"] as const;
+  let allCategories: string[] = [];
 
-  return categories.map((category) => {
+  for (const collection of collections) {
+    const categories = await getTaxonomy(collection, "categories");
+    allCategories = [...allCategories, ...categories];
+  }
+
+  // Deduplicate categories
+  const uniqueCategories = [...new Set(allCategories)];
+
+  return uniqueCategories.map((category) => {
     return {
       params: { category },
     };
   });
 }
 
-const { category } = Astro.params;
+const category = Astro.params.category;
+if (!category) {
+  throw new Error("Missing category param");
+}
 
-// get posts by category
-const BLOG_FOLDER = "blog";
-const posts = await getSinglePage(BLOG_FOLDER);
-const filterByCategories = taxonomyFilter(posts, "categories", category!);
+// get posts by category from all collections
+let allPosts: any[] = [];
+const collections = [
+  { key: "blog", route: "blog" },
+  { key: "ai", route: "ai" },
+  { key: "security", route: "security" },
+  { key: "dailyLife", route: "daily-life" },
+] as const;
+
+for (const { key, route } of collections) {
+  const posts = await getSinglePage(key);
+  // Inject 'section' property for BlogCard URL generation
+  const postsWithSection = posts.map((post) => ({ ...post, section: route }));
+  allPosts = [...allPosts, ...postsWithSection];
+}
+
+const filterByCategories = taxonomyFilter(allPosts, "categories", category);
 const sortedPosts = sortByDate(filterByCategories);
 ---
 
-<Base title={category}>
-  <PageHeader title={category} />
+<Base title={humanize(category)}>
+  <PageHeader title={humanize(category)} />
   <div class="section-sm pb-0">
     <div class="container">
       <div class="row">
         {
-          sortedPosts.map((post) => (
-            <div class="mb-14 md:col-6 lg:col-4">
-              <BlogCard data={post} />
+          sortedPosts.length > 0 ? (
+            sortedPosts.map((post) => (
+              <div class="mb-14 md:col-6 lg:col-4">
+                <BlogCard data={post} section={post.section} />
+              </div>
+            ))
+          ) : (
+            <div class="col-12 text-center">
+              <p>No posts found in this category.</p>
             </div>
-          ))
+          )
         }
       </div>
     </div>

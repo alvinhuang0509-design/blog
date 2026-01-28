@@ -1,0 +1,138 @@
+---
+import Base from "@/layouts/Base.astro";
+import PageHeader from "@/partials/PageHeader.astro";
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import { getSinglePage } from "@/lib/contentParser.astro";
+import { sortByDate } from "@/lib/utils/sortFunctions";
+import config from "@/config/config.json";
+import dateFormat from "@/lib/utils/dateFormat";
+
+const [aiPosts, securityPosts, lifePosts] = await Promise.all([
+  getSinglePage("ai"),
+  getSinglePage("security"),
+  getSinglePage("dailyLife"),
+]);
+
+const ai = sortByDate(aiPosts.map((post) => ({ ...post, section: "ai" }))).slice(0, 8);
+const security = sortByDate(securityPosts.map((post) => ({ ...post, section: "security" }))).slice(0, 8);
+const life = sortByDate(lifePosts.map((post) => ({ ...post, section: "daily-life" }))).slice(0, 8);
+
+const breadcrumbItems = [{ name: "从这里开始", url: "/start" }];
+---
+
+<Base
+  title="从这里开始"
+  meta_title={`从这里开始 - ${config.site.title}`}
+  description="新手导读：按主题路线阅读信息安全、AI与个人生活博客的精选与最新内容"
+>
+  <PageHeader title="从这里开始" />
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <section class="section">
+    <div class="container">
+      <div class="row justify-center">
+        <div class="lg:col-10">
+          <div class="mb-10 rounded-2xl border border-border bg-body p-8 dark:border-darkmode-border dark:bg-darkmode-light">
+            <h2 class="h4 mb-3">阅读路线</h2>
+            <p class="mb-0 text-text-light dark:text-darkmode-text-light">
+              建议从“信息安全 / AI”里选一个主题开始，先看 3–5 篇建立框架，再回到目录按分类深入。
+            </p>
+          </div>
+
+          <div class="grid gap-8 lg:grid-cols-3">
+            <div class="rounded-2xl border border-border bg-body p-6 dark:border-darkmode-border dark:bg-darkmode-light">
+              <div class="mb-4 flex items-center justify-between">
+                <h3 class="text-lg font-bold">信息安全</h3>
+                <a href="/security" class="text-sm font-semibold text-primary hover:underline dark:text-darkmode-primary" data-astro-prefetch="hover">
+                  全部
+                </a>
+              </div>
+              <ul class="space-y-3">
+                {security.map((post: any) => (
+                  <li>
+                    <a
+                      href={`/security/${post.id}`}
+                      class="block rounded-lg px-2 py-1 transition-colors hover:bg-light hover:text-primary dark:hover:bg-darkmode-body dark:hover:text-darkmode-primary"
+                      data-astro-prefetch="hover"
+                    >
+                      <div class="truncate font-semibold text-text-dark dark:text-darkmode-text-dark">{post.data.title}</div>
+                      {post.data.date && (
+                        <div class="text-xs text-text-light dark:text-darkmode-text-light">{dateFormat(post.data.date)}</div>
+                      )}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div class="rounded-2xl border border-border bg-body p-6 dark:border-darkmode-border dark:bg-darkmode-light">
+              <div class="mb-4 flex items-center justify-between">
+                <h3 class="text-lg font-bold">AI</h3>
+                <a href="/ai" class="text-sm font-semibold text-primary hover:underline dark:text-darkmode-primary" data-astro-prefetch="hover">
+                  全部
+                </a>
+              </div>
+              <ul class="space-y-3">
+                {ai.map((post: any) => (
+                  <li>
+                    <a
+                      href={`/ai/${post.id}`}
+                      class="block rounded-lg px-2 py-1 transition-colors hover:bg-light hover:text-primary dark:hover:bg-darkmode-body dark:hover:text-darkmode-primary"
+                      data-astro-prefetch="hover"
+                    >
+                      <div class="truncate font-semibold text-text-dark dark:text-darkmode-text-dark">{post.data.title}</div>
+                      {post.data.date && (
+                        <div class="text-xs text-text-light dark:text-darkmode-text-light">{dateFormat(post.data.date)}</div>
+                      )}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div class="rounded-2xl border border-border bg-body p-6 dark:border-darkmode-border dark:bg-darkmode-light">
+              <div class="mb-4 flex items-center justify-between">
+                <h3 class="text-lg font-bold">个人生活博客</h3>
+                <a href="/daily-life" class="text-sm font-semibold text-primary hover:underline dark:text-darkmode-primary" data-astro-prefetch="hover">
+                  全部
+                </a>
+              </div>
+              <ul class="space-y-3">
+                {life.map((post: any) => (
+                  <li>
+                    <a
+                      href={`/daily-life/${post.id}`}
+                      class="block rounded-lg px-2 py-1 transition-colors hover:bg-light hover:text-primary dark:hover:bg-darkmode-body dark:hover:text-darkmode-primary"
+                      data-astro-prefetch="hover"
+                    >
+                      <div class="truncate font-semibold text-text-dark dark:text-darkmode-text-dark">{post.data.title}</div>
+                      {post.data.date && (
+                        <div class="text-xs text-text-light dark:text-darkmode-text-light">{dateFormat(post.data.date)}</div>
+                      )}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div class="mt-10 rounded-2xl border border-border bg-body p-8 dark:border-darkmode-border dark:bg-darkmode-light">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h2 class="h4 mb-2">订阅更新</h2>
+                <p class="mb-0 text-text-light dark:text-darkmode-text-light">
+                  使用 RSS 订阅 <code>/rss.xml</code>，把更新汇总到你的阅读器里。
+                </p>
+              </div>
+              <div class="flex flex-wrap items-center gap-3">
+                <a class="btn btn-primary btn-sm" href="/subscribe" data-astro-prefetch="hover">订阅页</a>
+                <a class="btn btn-outline-primary btn-sm" href="/rss.xml">RSS</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+

@@ -26,9 +26,12 @@ const images = import.meta.glob("/public/images/**/*.{jpeg,jpg,png,gif,svg}");
 // Check if the source path is valid
 const isValidPath = images[src] ? true : false;
 
-// Log a warning message in red if the image is not found
-!isValidPath &&
-  console.error(`\x1b[31mImage not found - ${src}.\x1b[0m Make sure the image is in the /public/images folder.`);
+// Log a warning only during development if the image is not found
+if (!isValidPath && import.meta.env.DEV) {
+  console.warn(
+    `Image not found - ${src}. Make sure the image is in the /public/images folder.`,
+  );
+}
 ---
 
 {

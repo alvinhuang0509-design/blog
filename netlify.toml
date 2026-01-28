@@ -4,3 +4,13 @@ command = "yarn build"
 
 [build.environment]
 NODE_VERSION = "22.20.0"
+
+[[headers]]
+for = "/*"
+[headers.values]
+X-Content-Type-Options = "nosniff"
+X-Frame-Options = "DENY"
+Referrer-Policy = "strict-origin-when-cross-origin"
+Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+Cross-Origin-Opener-Policy = "same-origin"
+Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"

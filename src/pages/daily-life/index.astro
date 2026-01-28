@@ -1,0 +1,31 @@
+---
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import Base from "@/layouts/Base.astro";
+import { getCollection } from "astro:content";
+import PageHeader from "@/partials/PageHeader.astro";
+import Timeline from "@/components/Timeline.astro";
+
+const allPosts = await getCollection("dailyLife");
+
+const breadcrumbItems = [
+  { name: "个人生活博客", url: "/daily-life" }
+];
+---
+
+<Base
+  title="个人生活博客 - Lewin's Insight"
+  description="记录生活中的点滴瞬间，分享旅行、美食、摄影等生活感悟"
+>
+  <PageHeader title="个人生活博客" />
+  <Breadcrumbs items={breadcrumbItems} />
+  <section class="section">
+    <div class="container">
+      <div class="row gx-5">
+        <!-- timeline posts -->
+        <div class="lg:col-12">
+          <Timeline posts={allPosts} />
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -18,11 +18,66 @@ const blogCollection = defineCollection({
     meta_title: z.string().optional(),
     description: z.string().optional(),
     date: z.date().optional(),
+    updated: z.date().optional(),
     image: z.string().optional(),
-    author: z.string().default("Admin"),
+    author: z.string().default("Lewin"),
     categories: z.array(z.string()).default(["others"]),
     tags: z.array(z.string()).default(["others"]),
     draft: z.boolean().optional(),
+    views: z.number().default(0),
+    comments: z.number().default(0),
+    featured: z.boolean().default(false),
+    pinned: z.boolean().default(false),
+    weight: z.number().optional(),
+    subcategory: z.string().optional(),
+  }),
+});
+
+// AI collection schema
+const aiCollection = defineCollection({
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "src/content/ai" }),
+  schema: z.object({
+    title: z.string(),
+    meta_title: z.string().optional(),
+    description: z.string().optional(),
+    date: z.date().optional(),
+    updated: z.date().optional(),
+    image: z.string().optional(),
+    author: z.string().default("Lewin"),
+    categories: z.array(z.string()).default(["AI"]),
+    tags: z.array(z.string()).default([]),
+    draft: z.boolean().optional(),
+    views: z.number().default(0),
+    comments: z.number().default(0),
+    featured: z.boolean().default(false),
+    pinned: z.boolean().default(false),
+    weight: z.number().optional(),
+    related_papers: z.array(z.object({ title: z.string(), url: z.string() })).optional(),
+    model_type: z.string().optional(),
+  }),
+});
+
+// Security collection schema
+const securityCollection = defineCollection({
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "src/content/security" }),
+  schema: z.object({
+    title: z.string(),
+    meta_title: z.string().optional(),
+    description: z.string().optional(),
+    date: z.date().optional(),
+    updated: z.date().optional(),
+    image: z.string().optional(),
+    author: z.string().default("Lewin"),
+    categories: z.array(z.string()).default(["Security"]),
+    tags: z.array(z.string()).default([]),
+    draft: z.boolean().optional(),
+    views: z.number().default(0),
+    comments: z.number().default(0),
+    featured: z.boolean().default(false),
+    pinned: z.boolean().default(false),
+    weight: z.number().optional(),
+    severity: z.enum(["low", "medium", "high", "critical"]).optional(),
+    cve_id: z.string().optional(),
   }),
 });
 
@@ -78,6 +133,7 @@ const homepageCollection = defineCollection({
       title: z.string(),
       content: z.string(),
       image: z.string(),
+      image_dark: z.string().optional(),
       button: z.object({
         enable: z.boolean(),
         label: z.string(),
@@ -140,15 +196,42 @@ const testimonialSectionCollection = defineCollection({
   }),
 });
 
+// Daily Life collection schema
+const dailyLifeCollection = defineCollection({
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "src/content/daily-life" }),
+  schema: z.object({
+    title: z.string(),
+    meta_title: z.string().optional(),
+    description: z.string().optional(),
+    date: z.date(),
+    updated: z.date().optional(),
+    image: z.string().optional(),
+    author: z.string().default("Lewin"),
+    categories: z.array(z.string()).default(["others"]),
+    tags: z.array(z.string()).default(["others"]),
+    draft: z.boolean().optional(),
+    views: z.number().default(0),
+    comments: z.number().default(0),
+    featured: z.boolean().default(false),
+    pinned: z.boolean().default(false),
+    weight: z.number().optional(),
+    location: z.string().optional(),
+    mood: z.string().optional(),
+  }),
+});
+
 // Export collections
 export const collections = {
   // Pages
   homepage: homepageCollection,
   blog: blogCollection,
+  ai: aiCollection,
+  security: securityCollection,
   authors: authorsCollection,
   pages: pagesCollection,
   about: aboutCollection,
   contact: contactCollection,
+  dailyLife: dailyLifeCollection,
 
   // sections
   ctaSection: ctaSectionCollection,

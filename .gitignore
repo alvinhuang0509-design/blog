@@ -11,9 +11,14 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-yarn.lock
+dev_output*.log
+
+# package managers (track one lockfile for reproducible installs)
 package-lock.json
 
+# local tooling
+.codex/
+.trae/
 
 # environment variables
 .env

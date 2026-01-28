@@ -5,6 +5,14 @@ import config from "@/config/config.json";
 import menu from "@/config/menu.json";
 import { IoSearch } from "react-icons/io5";
 
+const getIconPath = (iconName: string) => {
+  const iconPaths: Record<string, string> = {
+    "fa-shield-halved": "M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256-114.6 256-256S397.4 0 256 0zm0 48c114.9 0 208 93.1 208 208s-93.1 208-208-208S114.9 48 0 48zm0 160c88.4 0 160-71.6 160-160s-71.6-160-160-160-71.6-160-160 71.6-160 160 71.6 160 160zm-48-48c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16zm80 0c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16zm-80 0c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16zm80 0c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16zm-80 0c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16z",
+    "fa-camera": "M512 256c0-141.4-114.6-256-256-256S114.6 0 256 0zm0 464c114.9 0 208-93.1 208-208s-93.1-208-208-208S114.9 48 0 48zm-48-48c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16zm80 0c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16zm-80 0c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16zm80 0c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16zm-80 0c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16z",
+  };
+  return iconPaths[iconName] || "";
+};
+
 export interface ChildNavigationLink {
   name: string;
   url: string;
@@ -15,6 +23,7 @@ export interface NavigationLink {
   url: string;
   hasChildren?: boolean;
   children?: ChildNavigationLink[];
+  icon?: string;
 }
 
 const { main }: { main: NavigationLink[] } = menu;
@@ -22,7 +31,7 @@ const { navigation_button, settings } = config;
 const { pathname } = Astro.url;
 ---
 
-<header class={`header z-30 ${settings.sticky_header && "sticky top-0"}`}>
+<header class={`header z-30 ${settings.sticky_header && "sticky top-0"} bg-body/80 backdrop-blur-md dark:bg-darkmode-body/80`}>
   <nav class="navbar container">
     <!-- logo -->
     <div class="order-0">
@@ -63,14 +72,21 @@ const { pathname } = Astro.url;
                 <label
                   for={`submenu-${menu.name}`}
                   class={`nav-link inline-flex items-center ${
-                    menu.children?.map(({ url }) => url).includes(pathname) ||
-                    menu.children
-                      ?.map(({ url }) => `${url}/`)
-                      .includes(pathname)
+                    menu.children?.some(
+                      ({ url }) =>
+                        pathname === url ||
+                        pathname === `${url}/` ||
+                        pathname.startsWith(`${url}/`),
+                    )
                       ? "active"
                       : ""
                   }`}
                 >
+                  {menu.icon && (
+                    <svg class="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 512 512">
+                      <path d={getIconPath(menu.icon)} />
+                    </svg>
+                  )}
                   {menu.name}
                   <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20">
                     <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
@@ -82,9 +98,11 @@ const { pathname } = Astro.url;
                       <a
                         href={child.url}
                         aria-label={child.name}
+                        data-astro-prefetch={child.url.startsWith("/") ? "hover" : undefined}
                         class={`nav-dropdown-link block ${
                           (pathname === `${child.url}/` ||
-                            pathname === child.url) &&
+                            pathname === child.url ||
+                            pathname.startsWith(`${child.url}/`)) &&
                           "active"
                         }`}
                       >
@@ -98,11 +116,19 @@ const { pathname } = Astro.url;
               <li class="nav-item">
                 <a
                   href={menu.url}
-                  class={`nav-link block ${
-                    (pathname === `${menu.url}/` || pathname === menu.url) &&
+                  data-astro-prefetch={menu.url.startsWith("/") ? "hover" : undefined}
+                  class={`nav-link block flex items-center ${
+                    (pathname === `${menu.url}/` ||
+                      pathname === menu.url ||
+                      pathname.startsWith(`${menu.url}/`)) &&
                     "active"
                   }`}
                 >
+                  {menu.icon && (
+                    <svg class="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 512 512">
+                      <path d={getIconPath(menu.icon)} />
+                    </svg>
+                  )}
                   {menu.name}
                 </a>
               </li>

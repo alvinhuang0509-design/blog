@@ -1,0 +1,58 @@
+---
+import Base from "@/layouts/Base.astro";
+import PageHeader from "@/partials/PageHeader.astro";
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import config from "@/config/config.json";
+
+const breadcrumbItems = [
+  { name: "订阅", url: "/subscribe" },
+];
+---
+
+<Base
+  title="订阅"
+  meta_title={`订阅 - ${config.site.title}`}
+  description="订阅 Lewin's Insight 的更新：RSS 使用说明与常见订阅方式"
+>
+  <PageHeader title="订阅" />
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <section class="section">
+    <div class="container">
+      <div class="row justify-center">
+        <div class="lg:col-8">
+          <div class="rounded-2xl border border-border bg-body p-8 dark:border-darkmode-border dark:bg-darkmode-light">
+            <h2 class="h4 mb-4">RSS（推荐）</h2>
+            <p class="mb-4 text-text-light dark:text-darkmode-text-light">
+              RSS 适合把更新集中到一个阅读器里，不需要注册账号，也不会错过新文章。
+            </p>
+            <div class="mb-6 flex flex-wrap items-center gap-3">
+              <a class="btn btn-primary btn-sm" href="/rss.xml">打开 RSS</a>
+              <a class="btn btn-outline-primary btn-sm" href="/rss.xml" download>
+                下载 XML
+              </a>
+            </div>
+
+            <h3 class="h5 mb-3">如何使用</h3>
+            <ol class="list-decimal pl-5 text-text-light dark:text-darkmode-text-light space-y-2">
+              <li>复制 RSS 地址：<code>/rss.xml</code></li>
+              <li>打开你的阅读器（如 Reeder、NetNewsWire、Inoreader 等）</li>
+              <li>粘贴并订阅即可</li>
+            </ol>
+
+            <hr class="my-8 border-border dark:border-darkmode-border" />
+
+            <h2 class="h4 mb-4">从这里开始</h2>
+            <p class="mb-4 text-text-light dark:text-darkmode-text-light">
+              如果你是第一次来，建议先从“文章地图”按主题路线阅读。
+            </p>
+            <a class="btn btn-outline-primary btn-sm" href="/start" data-astro-prefetch="hover">
+              打开文章地图
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+

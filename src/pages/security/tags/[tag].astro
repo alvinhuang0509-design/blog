@@ -1,0 +1,79 @@
+---
+import BlogCard from "@/components/BlogCard.astro";
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import Base from "@/layouts/Base.astro";
+import { getSinglePage } from "@/lib/contentParser.astro";
+import { getAllTaxonomy, getTaxonomy } from "@/lib/taxonomyParser.astro";
+import { sortByDate } from "@/lib/utils/sortFunctions";
+import taxonomyFilter from "@/lib/utils/taxonomyFilter";
+import { humanize } from "@/lib/utils/textConverter";
+import PageHeader from "@/partials/PageHeader.astro";
+import PostSidebar from "@/partials/PostSidebar.astro";
+
+export async function getStaticPaths() {
+  const tags = await getTaxonomy("security", "tags");
+  return tags.map((tag) => ({ params: { tag } }));
+}
+
+const tag = Astro.params.tag;
+if (!tag) {
+  throw new Error("Missing tag param");
+}
+
+const posts = await getSinglePage("security");
+const postsWithSection = posts.map((post) => ({ ...post, section: "security" }));
+
+const allCategories = await getAllTaxonomy("security", "categories");
+const categories = await getTaxonomy("security", "categories");
+const tags = await getTaxonomy("security", "tags");
+const allTags = await getAllTaxonomy("security", "tags");
+
+const tagPosts = sortByDate(taxonomyFilter(postsWithSection, "tags", tag));
+
+const breadcrumbItems = [
+  { name: "信息安全", url: "/security" },
+  { name: "标签", url: "/security/tags" },
+  { name: humanize(tag), url: `/security/tags/${tag}` },
+];
+---
+
+<Base
+  title={`${humanize(tag)} - 信息安全`}
+  description={`浏览标签 ${humanize(tag)} 下的全部安全文章`}
+>
+  <PageHeader title={humanize(tag)} />
+  <Breadcrumbs items={breadcrumbItems} />
+  <section class="section">
+    <div class="container">
+      <div class="row gx-5">
+        <div class="lg:col-8">
+          {
+            tagPosts.length > 0 ? (
+              <div class="row">
+                {
+                  tagPosts.map((post) => (
+                    <div class="mb-14 md:col-6">
+                      <BlogCard data={post} section={post.section} />
+                    </div>
+                  ))
+                }
+              </div>
+            ) : (
+              <div class="text-center py-20">
+                <p>暂无该标签下的文章</p>
+              </div>
+            )
+          }
+        </div>
+
+        <PostSidebar
+          categories={categories}
+          tags={tags}
+          allCategories={allCategories}
+          allTags={allTags}
+          taxonomyBase="security"
+        />
+      </div>
+    </div>
+  </section>
+</Base>

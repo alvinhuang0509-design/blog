@@ -22,6 +22,7 @@ const posts = await getSinglePage(BLOG_FOLDER);
 const allCategories = await getAllTaxonomy(BLOG_FOLDER, "categories");
 const categories = await getTaxonomy(BLOG_FOLDER, "categories");
 const tags = await getTaxonomy(BLOG_FOLDER, "tags");
+const allTags = await getAllTaxonomy(BLOG_FOLDER, "tags");
 const sortedPosts = sortByDate(posts);
 const totalPages = Math.ceil(posts.length / config.settings.pagination);
 const currentPage = slug && !isNaN(Number(slug)) ? Number(slug) : 1;
@@ -51,6 +52,7 @@ export async function getStaticPaths() {
   meta_title={postIndex.data.meta_title}
   image={postIndex.data.image}
   description={postIndex.data.description}
+  noindex={true}
 >
   <PageHeader title={postIndex.data.title} />
   <section class="section">
@@ -79,6 +81,7 @@ export async function getStaticPaths() {
           categories={categories}
           tags={tags}
           allCategories={allCategories}
+          allTags={allTags}
         />
       </div>
     </div>

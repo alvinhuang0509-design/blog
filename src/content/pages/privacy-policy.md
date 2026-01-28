@@ -1,30 +1,36 @@
 ---
-title: "Privacy"
-meta_title: ""
-description: "this is meta description"
+title: "隐私政策"
+meta_title: "隐私政策 - Lewin's Insight"
+description: "关于 Lewin's Insight 如何收集与使用信息的说明"
 draft: false
 ---
 
-#### Responsibility of Contributors
+本隐私政策适用于 `Lewin's Insight`（以下简称“本站”）。我们重视你的隐私，并尽量以最小化原则收集与处理信息。
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Purus, donec nunc eros, ullamcorper id feugiat quisque aliquam sagittis. Sem turpis sed viverra massa gravida pharetra. Non dui dolor potenti eu dignissim fusce. Ultrices amet, in curabitur a arcu a lectus morbi id. Iaculis erat sagittis in tortor cursus. Molestie urna eu tortor, erat scelerisque eget. Nunc hendrerit sed interdum lacus. Lorem quis viverra sed
+## 1. 我们收集哪些信息
 
-pretium, aliquam sit. Praesent elementum magna amet, tincidunt eros, nibh in leo. Malesuada purus, lacus, at aliquam suspendisse tempus. Quis tempus amet, velit nascetur sollicitudin. At sollicitudin eget amet in. Eu velit nascetur sollicitudin erhdfvssfvrgss eget viverra nec elementum. Lacus, facilisis tristique lectus in.
+- **你主动提供的信息**：例如通过邮件或联系表单与我们沟通时提供的姓名、邮箱与消息内容。
+- **日志信息**：当你访问本站时，服务器可能会记录常见的访问日志（如 IP、访问时间、请求路径、User-Agent）。该信息用于安全防护、故障排查与性能优化。
 
-#### Gathering of Personal Information
+## 2. 信息如何被使用
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Purus, donec nunc eros, ullamcorper id feugiat quisque aliquam sagittis. Sem turpis sed viverra massa gravida pharetra. Non dui dolor potenti eu dignissim fusce. Ultrices amet, in curabitur a arcu a lectus morbi id. Iaculis erat sagittis in tortor cursus. Molestie urna eu tortor, erat scelerisque eget. Nunc hendrerit sed interdum lacus. Lorem quis viverra sed
+- 改善网站内容与体验（例如分析哪些页面更常被访问）
+- 安全防护（例如识别异常请求、阻断攻击）
+- 与你沟通（回复你的问题或反馈）
 
-#### Protection of Personal- Information
+## 3. Cookie 与第三方服务
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Purus, donec nunc eros, ullamcorper id feugiat quisque aliquam sagittis. Sem turpis sed viverra massa gravida pharetra. Non dui dolor potenti eu dignissim fusce. Ultrices amet, in curabitur a arcu a lectus morbi id. Iaculis erat sagittis in tortor cursus.
+- 本站可能使用必要的 Cookie 以保证功能正常运行。
+- 若未来启用第三方服务（例如评论系统、统计分析等），第三方可能会设置其 Cookie 或收集相关信息。本站会在启用前尽量告知并提供合理选择。
 
-Molestie urna eu tortor, erat scelerisque eget. Nunc hendrerit sed interdum lacus. Lorem quis viverra sed
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Purus, donec nunc eros, ullamcorper id feugiat
+## 4. 信息共享
 
-#### Privacy Policy Changes
+除非法律法规要求，或为提供你请求的服务所必需，本站不会向第三方出售、出租或交易你的个人信息。
 
-1. Sll the Themefisher items are designed to be with the latest , We check all
-2. comments that threaten or harm the reputation of any person or organization
-3. personal information including, but limited to, email addresses, telephone numbers
-4. Any Update come in The technology Customer will get automatic Notification.
+## 5. 安全与保留
+
+我们会采取合理的技术与管理措施保护信息安全，并在达成收集目的所需的最短期限内保留相关数据。
+
+## 6. 联系我们
+
+如对本隐私政策有任何疑问，可通过站点“关于”页提供的联系方式与我们联系。

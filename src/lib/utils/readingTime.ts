@@ -1,11 +1,11 @@
 // content reading
-const readingTime = (content: string): string => {
+export const readingTimeMinutes = (content: string): number => {
   const WPS = 275 / 60;
 
   let images = 0;
   const regex = /\w/;
 
-  let words = content.split(" ").filter((word) => {
+  const words = content.split(" ").filter((word) => {
     if (word.includes("<img")) {
       images += 1;
     }
@@ -24,17 +24,12 @@ const readingTime = (content: string): string => {
     images -= 1;
   }
 
-  const minutes = Math.ceil(((words - imageAdjust) / WPS + imageSecs) / 60);
+  return Math.max(1, Math.ceil(((words - imageAdjust) / WPS + imageSecs) / 60));
+};
 
-  if (minutes < 10) {
-    if (minutes < 2) {
-      return "0" + minutes + ` Min read`;
-    } else {
-      return "0" + minutes + ` Mins read`;
-    }
-  } else {
-    return minutes + ` Mins read`;
-  }
+const readingTime = (content: string): string => {
+  const minutes = readingTimeMinutes(content);
+  return minutes < 10 ? `0${minutes} Min read` : `${minutes} Mins read`;
 };
 
 export default readingTime;

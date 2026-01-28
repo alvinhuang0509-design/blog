@@ -1,15 +1,15 @@
 {
   "site": {
-    "title": "Astroplate",
-    "base_url": "https://astroplate.netlify.app",
+    "title": "Lewin's Insight",
+    "base_url": "https://lewinsinsight.com",
     "base_path": "/",
     "trailing_slash": false,
-    "favicon": "/images/favicon.png",
-    "logo": "/images/logo.png",
-    "logo_darkmode": "/images/logo-darkmode.png",
+    "favicon": "/images/favicon.svg",
+    "logo": "/images/logo.svg",
+    "logo_darkmode": "/images/logo-darkmode.svg",
     "logo_width": "150",
     "logo_height": "30",
-    "logo_text": "Astroplate"
+    "logo_text": "Lewin's Insight"
   },
 
   "settings": {
@@ -24,19 +24,21 @@
 
   "announcement": {
     "enable": true,
-    "content": "<span class='text-center block'>♥️ Loving Astroplate? <a class='underline' href='https://github.com/zeon-studio/astroplate' target='_blank' rel='noopener'>Please ⭐️ on Github</a></span>",
+    "content": "<span class='text-center block'>喜欢 Lewin's Insight？<a class='underline' href='https://github.com/alvin.h' target='_blank' rel='noopener'>来 GitHub 逛逛</a>，也欢迎订阅更新。</span>",
     "expire_days": 7
   },
 
   "params": {
     "contact_form_action": "#",
-    "copyright": "Designed And Developed by [Zeon Studio](https://zeon.studio)"
+    "copyright": "Lewin's Insight",
+    "icp_number": "苏ICP备2024062850号",
+    "icp_link": "https://beian.miit.gov.cn/"
   },
 
   "navigation_button": {
     "enable": true,
-    "label": "Github",
-    "link": "https://github.com/zeon-studio/astroplate"
+    "label": "GitHub",
+    "link": "https://github.com/alvin.h"
   },
 
   "google_tag_manager": {
@@ -45,14 +47,16 @@
   },
 
   "disqus": {
-    "enable": true,
-    "shortname": "themefisher-template",
+    "enable": false,
+    "shortname": "",
     "settings": {}
   },
 
   "metadata": {
-    "meta_author": "zeon.studio",
+    "meta_author": "Lewin",
     "meta_image": "/images/og-image.png",
-    "meta_description": "astro and tailwind boilerplate"
+    "meta_description": "Lewin's Insight - 写安全，也写 AI，也写生活。把复杂的技术讲清楚，把值得记录的瞬间写下来。",
+    "language": "zh-CN",
+    "locale": "zh_CN"
   }
 }

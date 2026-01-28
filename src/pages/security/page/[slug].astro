@@ -1,0 +1,97 @@
+---
+import BlogCard from "@/components/BlogCard.astro";
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import Pagination from "@/components/Pagination.astro";
+import config from "@/config/config.json";
+import Base from "@/layouts/Base.astro";
+import { getSinglePage } from "@/lib/contentParser.astro";
+import { getAllTaxonomy, getTaxonomy } from "@/lib/taxonomyParser.astro";
+import { sortByDate } from "@/lib/utils/sortFunctions";
+import PageHeader from "@/partials/PageHeader.astro";
+import PostSidebar from "@/partials/PostSidebar.astro";
+
+const { slug } = Astro.params;
+const currentPage = slug && !isNaN(Number(slug)) ? Number(slug) : 1;
+
+const posts = await getSinglePage("security");
+const postsWithSection = posts.map((post) => ({ ...post, section: "security" }));
+const sortedPosts = sortByDate(postsWithSection);
+
+const totalPages = Math.ceil(posts.length / config.settings.pagination);
+const indexOfLastPost = currentPage * config.settings.pagination;
+const indexOfFirstPost = indexOfLastPost - config.settings.pagination;
+const currentPosts = sortedPosts.slice(indexOfFirstPost, indexOfLastPost);
+
+const categories = await getTaxonomy("security", "categories");
+const allCategories = await getAllTaxonomy("security", "categories");
+const tags = await getTaxonomy("security", "tags");
+const allTags = await getAllTaxonomy("security", "tags");
+
+export async function getStaticPaths() {
+  const posts = await getSinglePage("security");
+  const totalPages = Math.ceil(posts.length / config.settings.pagination);
+  const paths = [];
+
+  for (let i = 1; i < totalPages; i++) {
+    paths.push({
+      params: {
+        slug: (i + 1).toString(),
+      },
+    });
+  }
+
+  return paths;
+}
+
+const breadcrumbItems = [
+  { name: "信息安全", url: "/security" },
+  { name: `第 ${currentPage} 页`, url: `/security/page/${currentPage}` },
+];
+
+const pageTitle = "信息安全";
+const metaTitle = `信息安全 - 第 ${currentPage} 页 - Lewin's Insight`;
+const pageDesc = "聚焦漏洞、攻防与行业动态，分享可落地的安全洞察与实战经验。";
+---
+
+<Base title={pageTitle} meta_title={metaTitle} description={pageDesc} noindex={true}>
+  <PageHeader title={pageTitle} />
+  <Breadcrumbs items={breadcrumbItems} />
+  <section class="section">
+    <div class="container">
+      <div class="row gx-5">
+        <div class="lg:col-8">
+          <div class="row">
+            {
+              currentPosts.length > 0 ? (
+                currentPosts.map((post) => (
+                  <div class="mb-14 md:col-6">
+                    <BlogCard data={post} section={post.section} />
+                  </div>
+                ))
+              ) : (
+                <div class="col-12 text-center py-20">
+                  <h3 class="text-h3 text-text-light dark:text-darkmode-text-light">
+                    暂无文章，稍后再来看看。
+                  </h3>
+                </div>
+              )
+            }
+          </div>
+          <Pagination
+            section="security"
+            currentPage={currentPage}
+            totalPages={totalPages}
+          />
+        </div>
+
+        <PostSidebar
+          categories={categories}
+          tags={tags}
+          allCategories={allCategories}
+          allTags={allTags}
+          taxonomyBase="security"
+        />
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,51 +1,52 @@
 ---
 # Banner
 banner:
-  title: "The Ultimate Starter Template You Need To Start Your Astro Project"
-  content: "Astroplate is a free starter template built with Astro and TailwindCSS, providing everything you need to jumpstart your Astro project and save valuable time."
-  image: "/images/banner.png"
+  title: "Lewin's Insight<br/>写安全，也写 AI，也写生活"
+  content: "把复杂的技术讲清楚，把值得记录的瞬间写下来。这里有安全的体系化笔记、AI 的一线观察，以及不定期的生活随想。"
+  image: "/images/banner.svg"
+  image_dark: "/images/banner-dark.svg"
   button:
     enable: true
-    label: "Fork Deploy and Edit Online 🚀"
-    link: "https://app.sitepins.com/new/clone?name=Astroplate&repository=https://github.com/zeon-studio/astroplate/"
+    label: "订阅更新"
+    link: "/subscribe"
 
 # Features
 features:
-  - title: "What's Included in Astroplate"
+  - title: "Lewin's Insight 包含的功能"
     image: "/images/service-1.png"
-    content: "Astroplate is a comprehensive starter template that includes everything you need to get started with your Astro project. What's Included in Astroplate"
+    content: "Lewin's Insight 是一个功能完善的个人博客平台，包含你开始博客之旅所需的一切。"
     bulletpoints:
-      - "10+ Pre-build pages"
-      - "95+ Google Pagespeed Score"
-      - "Build with Astro and TailwindCSS for easy and customizable styling"
-      - "Fully responsive on all devices"
-      - "SEO-optimized for better search engine rankings"
-      - "**Open-source and free** for personal and commercial use"
+      - "三板块内容管理（信息安全资讯 + AI资讯 + 个人生活博客）"
+      - "95+ Google Pagespeed 评分"
+      - "使用 Astro 和 TailwindCSS 构建，易于定制"
+      - "完全响应式设计，适配所有设备"
+      - "SEO 优化，提升搜索引擎排名"
+      - "**开源免费**，个人和商业使用"
     button:
       enable: false
-      label: "Get Started Now"
+      label: "立即开始"
       link: "#"
 
-  - title: "Discover the Key Features Of Astro"
+  - title: "探索 Astro 的核心特性"
     image: "/images/service-2.png"
-    content: "Astro is an all-in-one web framework for building fast, content-focused websites. It offers a range of exciting features for developers and website creators. Some of the key features are:"
+    content: "Astro 是一个用于构建快速、内容导向型网站的一体化 Web 框架。它为开发者和网站创作者提供了一系列令人兴奋的功能。一些核心特性包括："
     bulletpoints:
-      - "Zero JS, by default: No JavaScript runtime overhead to slow you down."
-      - "Customizable: Tailwind, MDX, and 100+ other integrations to choose from."
-      - "UI-agnostic: Supports React, Preact, Svelte, Vue, Solid, Lit and more."
+      - "零 JavaScript：默认情况下没有 JavaScript 运行时开销。"
+      - "可定制：支持 Tailwind、MDX 和 100+ 其他集成。"
+      - "UI 无关：支持 React、Preact、Svelte、Vue、Solid、Lit 等。"
     button:
       enable: true
-      label: "Get Started Now"
-      link: "https://github.com/zeon-studio/astroplate"
+      label: "了解更多"
+      link: "https://astro.build"
 
-  - title: "The Top Reasons to Choose Astro for Your Next Project"
+  - title: "选择 Lewin's Insight 的理由"
     image: "/images/service-3.png"
-    content: "With Astro, you can build modern and content-focused websites without sacrificing performance or ease of use."
+    content: "使用 Lewin's Insight，你可以构建现代且内容导向的网站，而不会牺牲性能或易用性。"
     bulletpoints:
-      - "Instantly load static sites for better user experience and SEO."
-      - "Intuitive syntax and support for popular frameworks make learning and using Astro a breeze."
-      - "Use any front-end library or framework, or build custom components, for any project size."
-      - "Built on cutting-edge technology to keep your projects up-to-date with the latest web standards."
+      - "即时加载静态网站，提供更好的用户体验和 SEO。"
+      - "直观的语法和对流行框架的支持，让学习和使用变得轻而易举。"
+      - "使用任何前端库或框架，或构建自定义组件，适用于任何项目规模。"
+      - "基于尖端技术构建，让你的项目保持最新的 Web 标准。"
     button:
       enable: false
       label: ""

@@ -1,17 +1,18 @@
 ---
 import Base from "@/layouts/Base.astro";
-import { getAllTaxonomy, getTaxonomy } from "@/lib/taxonomyParser.astro";
+import { getAllTaxonomy } from "@/lib/taxonomyParser.astro";
 import { humanize } from "@/lib/utils/textConverter";
 import PageHeader from "@/partials/PageHeader.astro";
 
-const BLOG_FOLDER = "blog";
-
-const categories = await getTaxonomy(BLOG_FOLDER, "categories");
-const allCategories = await getAllTaxonomy(BLOG_FOLDER, "categories");
+const collections = ["blog", "ai", "security", "dailyLife"] as const;
+const allCategories = (
+  await Promise.all(collections.map((c) => getAllTaxonomy(c, "categories")))
+).flat();
+const categories = [...new Set(allCategories)];
 ---
 
-<Base title={"Categories"}>
-  <PageHeader title={"Categories"} />
+<Base title={"分类"} noindex={true}>
+  <PageHeader title={"分类"} />
   <section class="section">
     <div class="container text-center">
       <ul>

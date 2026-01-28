@@ -1,56 +1,81 @@
 {
   "main": [
     {
-      "name": "Home",
-      "url": "/"
-    },
-    {
-      "name": "About",
-      "url": "/about"
-    },
-    {
-      "name": "Elements",
-      "url": "/elements"
-    },
-    {
-      "name": "Pages",
-      "url": "",
+      "name": "信息安全",
+      "url": "/security",
+      "icon": "fa-shield-halved",
       "hasChildren": true,
       "children": [
         {
-          "name": "Contact",
-          "url": "/contact"
+          "name": "全部文章",
+          "url": "/security"
         },
         {
-          "name": "Blog",
-          "url": "/blog"
+          "name": "热门",
+          "url": "/security/hot"
         },
         {
-          "name": "Authors",
-          "url": "/authors"
+          "name": "分类",
+          "url": "/security/categories"
         },
         {
-          "name": "Categories",
-          "url": "/categories"
-        },
-        {
-          "name": "Tags",
-          "url": "/tags"
-        },
-        {
-          "name": "404 Page",
-          "url": "/404"
+          "name": "标签",
+          "url": "/security/tags"
         }
       ]
+    },
+    {
+      "name": "AI",
+      "url": "/ai",
+      "hasChildren": true,
+      "children": [
+        {
+          "name": "全部文章",
+          "url": "/ai"
+        },
+        {
+          "name": "热门",
+          "url": "/ai/hot"
+        },
+        {
+          "name": "分类",
+          "url": "/ai/categories"
+        },
+        {
+          "name": "标签",
+          "url": "/ai/tags"
+        }
+      ]
+    },
+    {
+      "name": "个人生活博客",
+      "url": "/daily-life",
+      "icon": "fa-camera"
+    },
+    {
+      "name": "关于",
+      "url": "/about"
+    },
+    {
+      "name": "订阅",
+      "url": "/subscribe"
     }
   ],
   "footer": [
     {
-      "name": "Elements",
-      "url": "/elements"
+      "name": "关于",
+      "url": "/about"
     },
     {
-      "name": "Privacy Policy",
+      "name": "订阅",
+      "url": "/subscribe"
+    },
+    {
+      "name": "安全联系",
+      "url": "/.well-known/security.txt"
+    },
+    {
+      "name": "隐私政策",
       "url": "/privacy-policy"
     }
   ]

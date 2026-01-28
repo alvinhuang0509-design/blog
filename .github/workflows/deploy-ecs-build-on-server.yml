@@ -1,0 +1,42 @@
+name: Deploy to ECS (build on server)
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-ecs-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      ECS_HOST: ${{ secrets.ECS_HOST }}
+      ECS_USER: ${{ secrets.ECS_USER }}
+      ECS_PORT: ${{ secrets.ECS_PORT }}
+      DEPLOY_BRANCH: ${{ secrets.DEPLOY_BRANCH }}
+      REPO_DIR: ${{ secrets.REPO_DIR }}
+      WEB_ROOT: ${{ secrets.WEB_ROOT }}
+    steps:
+      - name: Start SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.ECS_SSH_KEY }}
+
+      - name: Add known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "${ECS_PORT:-22}" -H "$ECS_HOST" >> ~/.ssh/known_hosts
+
+      - name: Deploy on ECS
+        run: |
+          : "${ECS_HOST:?Missing ECS_HOST secret}"
+          : "${ECS_USER:?Missing ECS_USER secret}"
+          DEPLOY_BRANCH="${DEPLOY_BRANCH:-main}"
+          REPO_DIR="${REPO_DIR:-/home/${ECS_USER}/astroplate}"
+          WEB_ROOT="${WEB_ROOT:-/var/www/lewins-insight}"
+          ssh -p "${ECS_PORT:-22}" "$ECS_USER@$ECS_HOST" \
+            "cd '$REPO_DIR' && bash scripts/deploy-ecs.sh --branch '$DEPLOY_BRANCH' --repo-dir '$REPO_DIR' --web-root '$WEB_ROOT'"
+

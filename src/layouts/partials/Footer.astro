@@ -4,9 +4,12 @@ import Social from "@/components/Social.astro";
 import config from "@/config/config.json";
 import menu from "@/config/menu.json";
 import social from "@/config/social.json";
-import { markdownify } from "@/lib/utils/textConverter";
 
 const { footer }: { footer: { name: string; url: string }[] } = menu;
+const year = new Date().getFullYear();
+const copyrightOwner = config.params.copyright || config.site.title;
+const icpNumber = config.params.icp_number;
+const icpLink = config.params.icp_link || "https://beian.miit.gov.cn/";
 ---
 
 <footer class="bg-light dark:bg-darkmode-light">
@@ -35,7 +38,22 @@ const { footer }: { footer: { name: string; url: string }[] } = menu;
     <div
       class="container text-center text-text-light dark:text-darkmode-text-light"
     >
-      <p set:html={markdownify(config.params.copyright)} />
+      <p>
+        © {year} {copyrightOwner}. All Rights Reserved.
+        {icpNumber && (
+          <>
+            {" "}
+            <a
+              href={icpLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="underline hover:text-primary dark:hover:text-darkmode-primary"
+            >
+              {icpNumber}
+            </a>
+          </>
+        )}
+      </p>
     </div>
   </div>
 </footer>

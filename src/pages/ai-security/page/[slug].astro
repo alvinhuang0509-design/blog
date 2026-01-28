@@ -1,0 +1,120 @@
+---
+import BlogCard from "@/components/BlogCard.astro";
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import Pagination from "@/components/Pagination.astro";
+import config from "@/config/config.json";
+import Base from "@/layouts/Base.astro";
+import { getSinglePage } from "@/lib/contentParser.astro";
+import { getAllTaxonomy, getTaxonomy } from "@/lib/taxonomyParser.astro";
+import { sortByDate } from "@/lib/utils/sortFunctions";
+import PageHeader from "@/partials/PageHeader.astro";
+import PostSidebar from "@/partials/PostSidebar.astro";
+
+const { slug } = Astro.params;
+const currentPage = slug && !isNaN(Number(slug)) ? Number(slug) : 1;
+
+// Fetch and merge AI + Security collections
+const aiPosts = await getSinglePage("ai");
+const securityPosts = await getSinglePage("security");
+const allPosts = [
+  ...aiPosts.map((post) => ({ ...post, section: "ai" })),
+  ...securityPosts.map((post) => ({ ...post, section: "security" })),
+];
+const sortedPosts = sortByDate(allPosts);
+
+// Pagination
+const totalPages = Math.ceil(allPosts.length / config.settings.pagination);
+const indexOfLastPost = currentPage * config.settings.pagination;
+const indexOfFirstPost = indexOfLastPost - config.settings.pagination;
+const currentPosts = sortedPosts.slice(indexOfFirstPost, indexOfLastPost);
+
+// Taxonomy for sidebar
+const categories = [
+  ...new Set([
+    ...(await getTaxonomy("ai", "categories")),
+    ...(await getTaxonomy("security", "categories")),
+  ]),
+];
+const allCategories = [
+  ...(await getAllTaxonomy("ai", "categories")),
+  ...(await getAllTaxonomy("security", "categories")),
+];
+const tags = [
+  ...new Set([
+    ...(await getTaxonomy("ai", "tags")),
+    ...(await getTaxonomy("security", "tags")),
+  ]),
+];
+const allTags = [
+  ...(await getAllTaxonomy("ai", "tags")),
+  ...(await getAllTaxonomy("security", "tags")),
+];
+
+export async function getStaticPaths() {
+  const aiPosts = await getSinglePage("ai");
+  const securityPosts = await getSinglePage("security");
+  const allPosts = [...aiPosts, ...securityPosts];
+  const totalPages = Math.ceil(allPosts.length / config.settings.pagination);
+  const paths = [];
+
+  for (let i = 1; i < totalPages; i++) {
+    paths.push({
+      params: {
+        slug: (i + 1).toString(),
+      },
+    });
+  }
+  return paths;
+}
+
+const breadcrumbItems = [
+  { name: "资讯汇总", url: "/ai-security" },
+  { name: `第 ${currentPage} 页`, url: `/ai-security/page/${currentPage}` },
+];
+
+const pageTitle = "资讯汇总";
+const pageDesc = "汇总 AI 资讯与信息安全资讯，分享技术洞察与实战经验。";
+---
+
+<Base title={pageTitle} meta_title={pageTitle} description={pageDesc} noindex={true}>
+  <PageHeader title={pageTitle} />
+  <Breadcrumbs items={breadcrumbItems} />
+  <section class="section">
+    <div class="container">
+      <div class="row gx-5">
+        <div class="lg:col-8">
+          <div class="row">
+            {
+              currentPosts.length > 0 ? (
+                currentPosts.map((post) => (
+                  <div class="mb-14 md:col-6">
+                    <BlogCard data={post} section={post.section} />
+                  </div>
+                ))
+              ) : (
+                <div class="col-12 text-center py-20">
+                  <h3 class="text-h3 text-text-light dark:text-darkmode-text-light">
+                    暂无文章，稍后再来看看。
+                  </h3>
+                </div>
+              )
+            }
+          </div>
+          <Pagination
+            section="ai-security"
+            currentPage={currentPage}
+            totalPages={totalPages}
+          />
+        </div>
+
+        <PostSidebar
+          categories={categories}
+          tags={tags}
+          allCategories={allCategories}
+          allTags={allTags}
+          taxonomyBase="ai-security"
+        />
+      </div>
+    </div>
+  </section>
+</Base>

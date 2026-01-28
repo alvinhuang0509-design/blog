@@ -1,0 +1,44 @@
+---
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import Base from "@/layouts/Base.astro";
+import { getAllTaxonomy } from "@/lib/taxonomyParser.astro";
+import { humanize } from "@/lib/utils/textConverter";
+import PageHeader from "@/partials/PageHeader.astro";
+
+const allTags = await getAllTaxonomy("ai", "tags");
+const tags = [...new Set(allTags)];
+
+const breadcrumbItems = [
+  { name: "AI", url: "/ai" },
+  { name: "标签", url: "/ai/tags" },
+];
+---
+
+<Base title="标签 - AI" description="浏览 AI 内容的全部标签" noindex={true}>
+  <PageHeader title="标签" />
+  <Breadcrumbs items={breadcrumbItems} />
+  <section class="section">
+    <div class="container text-center">
+      <ul>
+        {
+          tags.map((tag: string) => {
+            const count = allTags.filter((t) => t === tag).length;
+            return (
+              <li class="m-3 inline-block">
+                <a
+                  href={`/ai/tags/${tag}`}
+                  class="block rounded bg-light px-4 py-2 text-xl text-text-dark dark:bg-darkmode-light dark:text-darkmode-text-dark"
+                >
+                  {humanize(tag)}{" "}
+                  <span class="ml-2 rounded bg-body px-2 dark:bg-darkmode-body">
+                    {count}
+                  </span>
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </div>
+  </section>
+</Base>

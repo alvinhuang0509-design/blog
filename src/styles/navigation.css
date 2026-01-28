@@ -32,6 +32,12 @@
 
 .nav-dropdown-list {
   @apply bg-body dark:bg-darkmode-body z-10 min-w-[180px] rounded p-4 shadow-sm;
+  @apply transition-all duration-200 ease-out;
+  @apply lg:translate-y-1;
+}
+
+.nav-dropdown.group:hover .nav-dropdown-list {
+  @apply lg:translate-y-0;
 }
 
 .nav-dropdown-item {

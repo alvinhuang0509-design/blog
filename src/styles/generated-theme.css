@@ -6,28 +6,28 @@
 
 @theme {
   /* === Colors === */
-  --color-primary: #121212;
-  --color-body: #fff;
-  --color-border: #eaeaea;
-  --color-light: #f6f6f6;
-  --color-dark: #040404;
-  --color-text: #444444;
-  --color-text-dark: #040404;
-  --color-text-light: #717171;
+  --color-primary: #1A73E8;
+  --color-body: #FFFFFF;
+  --color-border: #E5E7EB;
+  --color-light: #F3F4F6;
+  --color-dark: #1F2937;
+  --color-text: #374151;
+  --color-text-dark: #111827;
+  --color-text-light: #6B7280;
 
   /* === Darkmode Colors === */
-  --color-darkmode-primary: #fff;
-  --color-darkmode-body: #1c1c1c;
-  --color-darkmode-border: #3E3E3E;
-  --color-darkmode-light: #222222;
-  --color-darkmode-dark: #fff;
-  --color-darkmode-text: #B4AFB6;
-  --color-darkmode-text-dark: #fff;
-  --color-darkmode-text-light: #B4AFB6;
+  --color-darkmode-primary: #8AB4F8;
+  --color-darkmode-body: #131314;
+  --color-darkmode-border: #3C4043;
+  --color-darkmode-light: #1E1F20;
+  --color-darkmode-dark: #E8EAED;
+  --color-darkmode-text: #BDC1C6;
+  --color-darkmode-text-dark: #E8EAED;
+  --color-darkmode-text-light: #9AA0A6;
 
   /* === Font Families === */
-  --font-primary: Heebo, sans-serif;
-  --font-secondary: Signika, sans-serif;
+  --font-primary: Inter, sans-serif;
+  --font-secondary: JetBrains Mono, monospace;
 
   /* === Font Sizes === */
   --text-base: 16px;

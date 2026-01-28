@@ -1,0 +1,174 @@
+/* hover effects */
+.hover-card {
+  @apply transition-all duration-300;
+}
+
+.hover-card:hover {
+  @apply transform translate-y-[-4px] shadow-xl;
+}
+
+.hover-btn {
+  @apply transition-all duration-200;
+}
+
+.hover-btn:hover {
+  @apply transform scale-105 shadow-lg;
+}
+
+.hover-link {
+  @apply transition-colors duration-200;
+}
+
+/* page transitions */
+.page-transition {
+  @apply transition-opacity duration-300;
+}
+
+.page-transition-enter {
+  @apply opacity-0;
+}
+
+.page-transition-enter-active {
+  @apply opacity-100;
+}
+
+.page-transition-exit {
+  @apply opacity-100;
+}
+
+.page-transition-exit-active {
+  @apply opacity-0;
+}
+
+/* loading skeleton */
+.skeleton {
+  @apply animate-pulse bg-gray-200 dark:bg-darkmode-light;
+}
+
+.skeleton-text {
+  @apply h-4 w-3/4 rounded;
+}
+
+.skeleton-image {
+  @apply h-48 w-full rounded-lg;
+}
+
+/* timeline styles */
+.timeline-marker {
+  @apply transition-all duration-300;
+}
+
+.timeline-item:hover .timeline-marker {
+  @apply transform scale-125 shadow-lg;
+}
+
+/* search highlight */
+mark {
+  @apply bg-yellow-200 dark:bg-yellow-800 text-text-dark dark:text-white px-1 rounded;
+}
+
+/* favorites widget */
+.favorite-item {
+  @apply transition-all duration-200;
+}
+
+.favorite-item:hover {
+  @apply transform translate-x-1 shadow-md;
+}
+
+/* responsive breakpoints */
+@media (max-width: 767px) {
+  .mobile-menu {
+    @apply block;
+  }
+  
+  .desktop-menu {
+    @apply hidden;
+  }
+  
+  .mobile-grid {
+    @apply grid-cols-1;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .tablet-menu {
+    @apply block;
+  }
+  
+  .tablet-grid {
+    @apply grid-cols-2;
+  }
+}
+
+@media (min-width: 1200px) {
+  .desktop-menu {
+    @apply block;
+  }
+  
+  .desktop-grid {
+    @apply grid-cols-3;
+  }
+}
+
+/* animation keyframes */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* view transitions (Astro ClientRouter) */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) {
+    animation: li-fade-out 200ms ease both;
+  }
+
+  ::view-transition-new(root) {
+    animation: li-fade-in 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .hover-card:hover {
+    will-change: transform;
+  }
+}
+
+@keyframes li-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes li-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

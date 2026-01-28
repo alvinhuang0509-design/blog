@@ -1,78 +1,107 @@
-import searchData from ".json/search.json";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import SearchResult, { type ISearchItem } from "./SearchResult";
+
+const escapeRegExp = (value: string) =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 const SearchModal = () => {
   const [searchString, setSearchString] = useState("");
+  const [searchData, setSearchData] = useState<ISearchItem[] | null>(null);
+  const [isLoadingIndex, setIsLoadingIndex] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const loadingPromiseRef = useRef<Promise<void> | null>(null);
 
-  // handle input change
+  const ensureIndexLoaded = useCallback(async () => {
+    if (searchData) return;
+    if (loadingPromiseRef.current) return loadingPromiseRef.current;
+
+    setIsLoadingIndex(true);
+    setLoadError(null);
+
+    const promise = (async () => {
+      try {
+        const response = await fetch("/search.json", {
+          headers: { Accept: "application/json" },
+        });
+        if (!response.ok) {
+          throw new Error(`Failed to load search index (${response.status})`);
+        }
+        const json = (await response.json()) as ISearchItem[];
+        setSearchData(json);
+      } catch (error) {
+        setLoadError(error instanceof Error ? error.message : "Unknown error");
+      } finally {
+        setIsLoadingIndex(false);
+        loadingPromiseRef.current = null;
+      }
+    })();
+
+    loadingPromiseRef.current = promise;
+    return promise;
+  }, [searchData]);
+
   const handleSearch = (e: React.FormEvent<HTMLInputElement>) => {
-    setSearchString(e.currentTarget.value.replace("\\", "").toLowerCase());
+    void ensureIndexLoaded();
+    setSearchString(e.currentTarget.value.replace(/\\/g, "").toLowerCase());
   };
 
-  // generate search result
-  const doSearch = (searchData: ISearchItem[]) => {
-    const regex = new RegExp(`${searchString}`, "gi");
-    if (searchString === "") {
-      return [];
-    } else {
-      const searchResult = searchData.filter((item) => {
-        const title = item.frontmatter.title.toLowerCase().match(regex);
-        const description = item.frontmatter.description
-          ?.toLowerCase()
-          .match(regex);
+  const searchResult = useMemo(() => {
+    const startTime = performance.now();
+    let result: ISearchItem[] = [];
+
+
+    const q = searchString.trim();
+    if (q && searchData) {
+      const regex = new RegExp(escapeRegExp(q), "i");
+      result = searchData.filter((item) => {
+        const title = item.frontmatter.title?.toLowerCase().match(regex);
+        const description = item.frontmatter.description?.toLowerCase().match(regex);
         const categories = item.frontmatter.categories
           ?.join(" ")
           .toLowerCase()
           .match(regex);
-        const tags = item.frontmatter.tags
-          ?.join(" ")
-          .toLowerCase()
-          .match(regex);
-        const content = item.content.toLowerCase().match(regex);
+        const tags = item.frontmatter.tags?.join(" ").toLowerCase().match(regex);
+        const content = item.content?.toLowerCase().match(regex);
 
-        if (title || content || description || categories || tags) {
-          return item;
-        }
+        return Boolean(title || content || description || categories || tags);
       });
-      return searchResult;
     }
-  };
 
-  // get search result
-  const startTime = performance.now();
-  const searchResult = doSearch(searchData);
-  const endTime = performance.now();
-  const totalTime = ((endTime - startTime) / 1000).toFixed(3);
+    const endTime = performance.now();
+    const totalTime = ((endTime - startTime) / 1000).toFixed(3);
+    
+    return { result, totalTime };
+  }, [searchData, searchString]);
 
   // search dom manipulation
   useEffect(() => {
     const searchModal = document.getElementById("searchModal");
     const searchInput = document.getElementById("searchInput");
     const searchModalOverlay = document.getElementById("searchModalOverlay");
-    const searchResultItems = document.querySelectorAll("#searchItem");
     const searchModalTriggers = document.querySelectorAll(
       "[data-search-trigger]",
     );
 
+    const openModal = () => {
+      void ensureIndexLoaded();
+      searchModal?.classList.add("show");
+      (searchInput as HTMLInputElement | null)?.focus();
+    };
+
     // search modal open
     searchModalTriggers.forEach((button) => {
-      button.addEventListener("click", function () {
-        const searchModal = document.getElementById("searchModal");
-        searchModal!.classList.add("show");
-        searchInput!.focus();
-      });
+      button.addEventListener("click", openModal);
     });
 
     // search modal close
-    searchModalOverlay!.addEventListener("click", function () {
-      searchModal!.classList.remove("show");
-    });
+    const closeModal = () => searchModal?.classList.remove("show");
+    searchModalOverlay?.addEventListener("click", closeModal);
 
     // keyboard navigation
     let selectedIndex = -1;
 
     const updateSelection = () => {
+      const searchResultItems = document.querySelectorAll("[data-search-item]");
       searchResultItems.forEach((item, index) => {
         if (index === selectedIndex) {
           item.classList.add("search-result-item-active");
@@ -87,10 +116,12 @@ const SearchModal = () => {
       });
     };
 
-    document.addEventListener("keydown", function (event) {
+    const handleKeyDown = function (event: KeyboardEvent) {
+      const searchResultItems = document.querySelectorAll("[data-search-item]");
+      
       if ((event.metaKey || event.ctrlKey) && event.key === "k") {
-        searchModal!.classList.add("show");
-        searchInput!.focus();
+        event.preventDefault();
+        openModal();
         updateSelection();
       }
 
@@ -99,7 +130,7 @@ const SearchModal = () => {
       }
 
       if (event.key === "Escape") {
-        searchModal!.classList.remove("show");
+        closeModal();
       }
 
       if (event.key === "ArrowUp" && selectedIndex > 0) {
@@ -119,8 +150,18 @@ const SearchModal = () => {
       }
 
       updateSelection();
-    });
-  }, [searchString]);
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      searchModalOverlay?.removeEventListener("click", closeModal);
+      searchModalTriggers.forEach((button) => {
+        button.removeEventListener("click", openModal);
+      });
+    };
+  }, [ensureIndexLoaded]);
 
   return (
     <div id="searchModal" className="search-modal">
@@ -172,7 +213,20 @@ const SearchModal = () => {
             autoComplete="off"
           />
         </div>
-        <SearchResult searchResult={searchResult} searchString={searchString} />
+        {loadError ? (
+          <div className="p-6 text-center text-red-600 dark:text-red-300">
+            {loadError}
+          </div>
+        ) : isLoadingIndex && !searchData ? (
+          <div className="p-6 text-center text-text-light dark:text-darkmode-text-light">
+            Loading search index…
+          </div>
+        ) : (
+          <SearchResult
+            searchResult={searchResult.result}
+            searchString={searchString}
+          />
+        )}
         <div className="search-wrapper-footer">
           <span className="flex items-center">
             <kbd>
@@ -215,8 +269,8 @@ const SearchModal = () => {
           </span>
           {searchString && (
             <span>
-              <strong>{searchResult.length} </strong> results - in{" "}
-              <strong>{totalTime} </strong> seconds
+              <strong>{searchResult.result.length} </strong> results - in{" "}
+              <strong>{searchResult.totalTime} </strong> seconds
             </span>
           )}
           <span>

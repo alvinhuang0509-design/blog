@@ -1,0 +1,61 @@
+name: Deploy to ECS
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-ecs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      ASTRO_TELEMETRY_DISABLED: "1"
+      CI: "1"
+      ECS_HOST: ${{ secrets.ECS_HOST }}
+      ECS_USER: ${{ secrets.ECS_USER }}
+      ECS_PORT: ${{ secrets.ECS_PORT }}
+      ECS_PATH: ${{ secrets.ECS_PATH }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+
+      - name: Setup Yarn
+        run: |
+          corepack enable
+          corepack prepare yarn@1.22.22 --activate
+          yarn --version
+
+      - name: Install deps
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build
+
+      - name: Start SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.ECS_SSH_KEY }}
+
+      - name: Add known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "${ECS_PORT:-22}" -H "$ECS_HOST" >> ~/.ssh/known_hosts
+
+      - name: Upload dist to ECS
+        run: |
+          : "${ECS_HOST:?Missing ECS_HOST secret}"
+          : "${ECS_USER:?Missing ECS_USER secret}"
+          ECS_PATH="${ECS_PATH:-/var/www/lewins-insight/current}"
+          ssh -p "${ECS_PORT:-22}" "$ECS_USER@$ECS_HOST" "mkdir -p '$ECS_PATH'"
+          rsync -az --delete \
+            --exclude='.well-known' \
+            -e "ssh -p ${ECS_PORT:-22}" \
+            dist/ "$ECS_USER@$ECS_HOST:$ECS_PATH/"

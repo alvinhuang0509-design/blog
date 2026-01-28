@@ -1,0 +1,125 @@
+---
+import dateFormat from "@/lib/utils/dateFormat";
+import ImageMod from "./ImageMod.astro";
+
+export interface TimelinePost {
+  id: string;
+  data: {
+    title: string;
+    date: Date;
+    image?: string;
+    description?: string;
+    location?: string;
+  };
+}
+
+export interface Props {
+  posts: TimelinePost[];
+}
+
+const { posts } = Astro.props as Props;
+
+interface MonthGroups {
+  [key: string]: TimelinePost[];
+}
+
+const groupedByMonth = posts.reduce((groups: MonthGroups, post: TimelinePost) => {
+  const date = new Date(post.data.date);
+  const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+  
+  if (!groups[monthKey]) {
+    groups[monthKey] = [];
+  }
+  groups[monthKey].push(post);
+  return groups;
+}, {} as MonthGroups);
+
+const sortedMonths = Object.keys(groupedByMonth).sort().reverse();
+---
+
+<div class="timeline">
+  {
+    sortedMonths.map((month) => {
+      const monthPosts = groupedByMonth[month];
+      const [year, monthNum] = month.split('-');
+      const monthNames = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
+      const monthName = monthNames[parseInt(monthNum) - 1];
+      
+      return (
+        <div class="timeline-month mb-12">
+          <div class="timeline-month-header mb-6">
+            <h3 class="text-2xl font-bold text-primary dark:text-darkmode-primary">
+              {year}年{monthName}
+            </h3>
+            <span class="text-text-light dark:text-darkmode-text-light">
+              {monthPosts.length} 篇文章
+            </span>
+          </div>
+          
+          <div class="timeline-items">
+            {
+              monthPosts.map((post) => (
+                <div class="timeline-item relative pl-8 pb-8 border-l-2 border-border dark:border-darkmode-border">
+                  <div class="timeline-marker absolute -left-2 top-6 h-4 w-4 rounded-full bg-primary dark:bg-darkmode-primary"></div>
+                  
+                  <div class="timeline-content bg-light dark:bg-darkmode-light p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                    {
+                      post.data.image && (
+                        <ImageMod
+                          class="mb-4 w-full rounded"
+                          src={post.data.image}
+                          alt={post.data.title}
+                          width={600}
+                          height={300}
+                          format="webp"
+                          loading="lazy"
+                        />
+                      )
+                    }
+                    
+                    <h4 class="mb-3 text-xl font-semibold">
+                      <a href={`/daily-life/${post.id}`} class="hover:text-primary dark:hover:text-darkmode-primary transition-colors">
+                        {post.data.title}
+                      </a>
+                    </h4>
+                    
+                    <div class="mb-3 flex items-center space-x-4 text-sm text-text-light dark:text-darkmode-text-light">
+                      <span>
+                        <svg class="inline-block mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M10 9a3 3 0 100-6 0v1a1 1 0 001 1h1a1 1 0 001-1v-1a3 3 0 100-6 0z" />
+                        </svg>
+                        {dateFormat(post.data.date)}
+                      </span>
+                      {
+                        post.data.location && (
+                          <span>
+                            <svg class="inline-block mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M5.05 4.05a1 1 0 010-1.414 0L10.586 9 7.293 5.707a1 1 0 011.414 0l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414z" />
+                            </svg>
+                            {post.data.location}
+                          </span>
+                        )
+                      }
+                    </div>
+                    
+                    <p class="mb-4 text-text dark:text-darkmode-text">
+                      {post.data.description}
+                    </p>
+                    
+                    <a
+                      href={`/daily-life/${post.id}`}
+                      class="btn btn-outline-primary btn-sm"
+                      aria-label={`阅读更多关于${post.data.title}的内容`}
+                    >
+                      阅读更多
+                    </a>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      );
+    })
+  }
+</div>

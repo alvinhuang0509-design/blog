@@ -1,13 +1,28 @@
 ---
 import { humanize } from "@/lib/utils/textConverter";
 
-const { tags, categories, allCategories } = Astro.props;
+const {
+  tags = [],
+  categories = [],
+  allCategories = [],
+  allTags = [],
+  taxonomyBase,
+}: {
+  tags?: string[];
+  categories?: string[];
+  allCategories?: string[];
+  allTags?: string[];
+  taxonomyBase?: string;
+} = Astro.props;
+
+const categoryBase = taxonomyBase ? `/${taxonomyBase}/categories` : "/categories";
+const tagBase = taxonomyBase ? `/${taxonomyBase}/tags` : "/tags";
 ---
 
 <div class="lg:col-4">
   <!-- categories -->
   <div class="mb-8">
-    <h5 class="mb-6">Categories</h5>
+    <h5 class="mb-6">分类</h5>
     <div class="rounded bg-light p-8 dark:bg-darkmode-light">
       <ul class="space-y-4">
         {
@@ -19,7 +34,7 @@ const { tags, categories, allCategories } = Astro.props;
               <li>
                 <a
                   class="flex justify-between hover:text-primary dark:hover:text-darkmode-primary"
-                  href={`/categories/${category}`}
+                  href={`${categoryBase}/${category}`}
                 >
                   {humanize(category)} <span>({count})</span>
                 </a>
@@ -32,18 +47,24 @@ const { tags, categories, allCategories } = Astro.props;
   </div>
   <!-- tags -->
   <div class="mb-8">
-    <h5 class="mb-6">Tags</h5>
+    <h5 class="mb-6">标签</h5>
     <div class="rounded bg-light p-6 dark:bg-darkmode-light">
       <ul>
         {
           tags.map((tag: any) => {
+            const count = allTags.length
+              ? allTags.filter((t: any) => t === tag).length
+              : undefined;
             return (
               <li class="inline-block">
                 <a
                   class="m-1 block rounded bg-white px-3 py-1 hover:bg-primary hover:text-white dark:bg-darkmode-body dark:hover:bg-darkmode-primary dark:hover:text-text-dark"
-                  href={`/tags/${tag}`}
+                  href={`${tagBase}/${tag}`}
                 >
                   {humanize(tag)}
+                  {typeof count === "number" && (
+                    <span class="ml-1 opacity-70">({count})</span>
+                  )}
                 </a>
               </li>
             );

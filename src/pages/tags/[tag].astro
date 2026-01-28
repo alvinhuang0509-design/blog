@@ -5,39 +5,71 @@ import { getSinglePage } from "@/lib/contentParser.astro";
 import { getTaxonomy } from "@/lib/taxonomyParser.astro";
 import { sortByDate } from "@/lib/utils/sortFunctions";
 import taxonomyFilter from "@/lib/utils/taxonomyFilter";
+import { humanize } from "@/lib/utils/textConverter";
 import PageHeader from "@/partials/PageHeader.astro";
 
+// get static paths for all tags across all collections
 export async function getStaticPaths() {
-  const BLOG_FOLDER = "blog";
-  const tags = await getTaxonomy(BLOG_FOLDER, "tags");
+  const collections = ["blog", "ai", "security", "dailyLife"] as const;
+  let allTags: string[] = [];
 
-  return tags.map((tag) => {
+  for (const collection of collections) {
+    const tags = await getTaxonomy(collection, "tags");
+    allTags = [...allTags, ...tags];
+  }
+
+  // Deduplicate tags
+  const uniqueTags = [...new Set(allTags)];
+
+  return uniqueTags.map((tag) => {
     return {
       params: { tag },
     };
   });
 }
 
-const { tag } = Astro.params;
+const tag = Astro.params.tag;
+if (!tag) {
+  throw new Error("Missing tag param");
+}
 
-// get posts by tag
-const BLOG_FOLDER = "blog";
-const posts = await getSinglePage(BLOG_FOLDER);
-const filterByTags = taxonomyFilter(posts, "tags", tag!);
+// get posts by tag from all collections
+let allPosts: any[] = [];
+const collections = [
+  { key: "blog", route: "blog" },
+  { key: "ai", route: "ai" },
+  { key: "security", route: "security" },
+  { key: "dailyLife", route: "daily-life" },
+] as const;
+
+for (const { key, route } of collections) {
+  const posts = await getSinglePage(key);
+  // Inject 'section' property for BlogCard URL generation
+  const postsWithSection = posts.map((post) => ({ ...post, section: route }));
+  allPosts = [...allPosts, ...postsWithSection];
+}
+
+const filterByTags = taxonomyFilter(allPosts, "tags", tag);
 const sortedPosts = sortByDate(filterByTags);
 ---
 
-<Base title={tag}>
-  <PageHeader title={tag} />
+<Base title={humanize(tag)}>
+  <PageHeader title={humanize(tag)} />
   <div class="section-sm pb-0">
     <div class="container">
       <div class="row">
         {
-          sortedPosts.map((post) => (
-            <div class="mb-14 md:col-6 lg:col-4">
-              <BlogCard data={post} />
+          sortedPosts.length > 0 ? (
+            sortedPosts.map((post) => (
+              <div class="mb-14 md:col-6 lg:col-4">
+                <BlogCard data={post} section={post.section} />
+              </div>
+            ))
+          ) : (
+             <div class="col-12 text-center">
+              <p>No posts found with this tag.</p>
             </div>
-          ))
+          )
         }
       </div>
     </div>

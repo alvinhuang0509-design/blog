@@ -1,0 +1,77 @@
+---
+import BlogCard from "@/components/BlogCard.astro";
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import Base from "@/layouts/Base.astro";
+import { getSinglePage } from "@/lib/contentParser.astro";
+import { sortByDate } from "@/lib/utils/sortFunctions";
+import { humanize } from "@/lib/utils/textConverter";
+import taxonomyFilter from "@/lib/utils/taxonomyFilter";
+import PageHeader from "@/partials/PageHeader.astro";
+import PostSidebar from "@/partials/PostSidebar.astro";
+import { getAllTaxonomy, getTaxonomy } from "@/lib/taxonomyParser.astro";
+
+export async function getStaticPaths() {
+  const categories = await getTaxonomy("ai", "categories");
+  return categories.map((category) => ({ params: { category } }));
+}
+
+const category = Astro.params.category;
+if (!category) {
+  throw new Error("Missing category param");
+}
+
+const posts = await getSinglePage("ai");
+const postsWithSection = posts.map((post) => ({ ...post, section: "ai" }));
+
+const allCategories = await getAllTaxonomy("ai", "categories");
+const categories = await getTaxonomy("ai", "categories");
+const tags = await getTaxonomy("ai", "tags");
+const allTags = await getAllTaxonomy("ai", "tags");
+
+const categoryPosts = sortByDate(
+  taxonomyFilter(postsWithSection, "categories", category),
+);
+
+const breadcrumbItems = [
+  { name: "AI", url: "/ai" },
+  { name: humanize(category), url: `/ai/categories/${category}` },
+];
+---
+
+<Base title={`${humanize(category)} - AI`} description={`浏览${humanize(category)}分类下的全部 AI 文章`}>
+  <PageHeader title={humanize(category)} />
+  <Breadcrumbs items={breadcrumbItems} />
+  <section class="section">
+    <div class="container">
+      <div class="row gx-5">
+        <div class="lg:col-8">
+          {
+            categoryPosts.length > 0 ? (
+              <div class="row">
+                {
+                  categoryPosts.map((post) => (
+                    <div class="mb-14 md:col-6">
+                      <BlogCard data={post} section={post.section} />
+                    </div>
+                  ))
+                }
+              </div>
+            ) : (
+              <div class="text-center py-20">
+                <p>暂无该分类下的文章</p>
+              </div>
+            )
+          }
+        </div>
+
+        <PostSidebar
+          categories={categories}
+          tags={tags}
+          allCategories={allCategories}
+          allTags={allTags}
+          taxonomyBase="ai"
+        />
+      </div>
+    </div>
+  </section>
+</Base>

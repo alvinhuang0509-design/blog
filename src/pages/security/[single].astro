@@ -1,0 +1,39 @@
+---
+import Base from "@/layouts/Base.astro";
+import PostSingle from "@/layouts/PostSingle.astro";
+import { getSinglePage } from "@/lib/contentParser.astro";
+import { needsKatex, needsMermaid } from "@/lib/utils/contentFeatures";
+
+export async function getStaticPaths() {
+  const COLLECTION_NAME = "security";
+  const posts = await getSinglePage(COLLECTION_NAME);
+
+  const paths = posts.map((post) => ({
+    params: {
+      single: post.id,
+    },
+    props: { post },
+  }));
+  return paths;
+}
+
+const { post } = Astro.props;
+const { title, meta_title, description, image, date, updated, author } = post.data;
+const katex = needsKatex(post.body);
+const mermaid = needsMermaid(post.body);
+---
+
+<Base
+  title={title}
+  meta_title={meta_title}
+  description={description}
+  image={image}
+  og_type="article"
+  published_time={date}
+  modified_time={updated}
+  author={author}
+  katex={katex}
+  mermaid={mermaid}
+>
+  <PostSingle post={post} />
+</Base>

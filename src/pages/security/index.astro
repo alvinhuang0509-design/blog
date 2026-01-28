@@ -1,0 +1,69 @@
+---
+import BlogCard from "@/components/BlogCard.astro";
+import Pagination from "@/components/Pagination.astro";
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import config from "@/config/config.json";
+import Base from "@/layouts/Base.astro";
+import { getSinglePage } from "@/lib/contentParser.astro";
+import { getAllTaxonomy, getTaxonomy } from "@/lib/taxonomyParser.astro";
+import { sortByDate } from "@/lib/utils/sortFunctions";
+import PageHeader from "@/partials/PageHeader.astro";
+import PostSidebar from "@/partials/PostSidebar.astro";
+
+const posts = await getSinglePage("security");
+const postsWithSection = posts.map((post) => ({ ...post, section: "security" }));
+const sortedPosts = sortByDate(postsWithSection);
+
+const totalPages: number = Math.ceil(posts.length / config.settings.pagination);
+const currentPosts = sortedPosts.slice(0, config.settings.pagination);
+
+const categories = await getTaxonomy("security", "categories");
+const allCategories = await getAllTaxonomy("security", "categories");
+const tags = await getTaxonomy("security", "tags");
+const allTags = await getAllTaxonomy("security", "tags");
+
+const breadcrumbItems = [{ name: "信息安全", url: "/security" }];
+
+const pageTitle = "信息安全";
+const metaTitle = "信息安全 - Lewin's Insight";
+const pageDesc = "聚焦漏洞、攻防与行业动态，分享可落地的安全洞察与实战经验。";
+---
+
+<Base title={pageTitle} meta_title={metaTitle} description={pageDesc}>
+  <PageHeader title={pageTitle} />
+  <Breadcrumbs items={breadcrumbItems} />
+  <section class="section">
+    <div class="container">
+      <div class="row gx-5">
+        <div class="lg:col-8">
+          <div class="row">
+            {
+              currentPosts.length > 0 ? (
+                currentPosts.map((post) => (
+                  <div class="mb-14 md:col-6">
+                    <BlogCard data={post} section={post.section} />
+                  </div>
+                ))
+              ) : (
+                <div class="col-12 text-center py-20">
+                  <h3 class="text-h3 text-text-light dark:text-darkmode-text-light">
+                    暂无文章，稍后再来看看。
+                  </h3>
+                </div>
+              )
+            }
+          </div>
+          <Pagination section="security" currentPage={1} totalPages={totalPages} />
+        </div>
+
+        <PostSidebar
+          categories={categories}
+          tags={tags}
+          allCategories={allCategories}
+          allTags={allTags}
+          taxonomyBase="security"
+        />
+      </div>
+    </div>
+  </section>
+</Base>
