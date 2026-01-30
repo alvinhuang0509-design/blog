@@ -5,7 +5,7 @@
 - AI
 - 个人生活博客
 
-## 开发
+## 开发（测试）
 
 ```bash
 yarn install
